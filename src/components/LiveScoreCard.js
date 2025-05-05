@@ -1,50 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-// import { fetchLiveScores } from '../pages/api/liveScore';
 
 export default function LiveScorecard({score}) {
-//   const [score, setScore] = useState({
-//     seriesId: "",
-//     matchId: "",
-//     matchTitle: "",
-//     matchFormat: " ",
-//     matchVenue: "",
-//     matchDate: "",
-//     matchTime: " ",
-//     teamOne: {
-//       name: "",
-//       score: "",
-//       status: "",
-//     },
-//     teamTwo: {
-//       name: "",
-//       score: "",
-//       status: "",
-//     },
-//     matchStatus: "",
-//     currentStatus: "",
-//   });
-
-//   const { data, isLoading, isError, error, refetch } = useQuery({
-//     queryKey: ["liveScores"],
-//     queryFn: fetchLiveScores,
-//     refetchInterval: 30000,
-//   });
-
-//   const isLive = true;
-
-//   useEffect(() => {
-//     if (data) {
-//       const matchDetails = data?.response?.filter(
-//         (match) => match.seriesName == "INDIAN PREMIER LEAGUE 2025"
-//       );
-
-//       setScore(matchDetails?.[0]?.matchList?.[0]);
-//     }
-//   }, [data]);
-
-//   if (isLoading) return <p>Loading live scores...</p>;
-//   if (isError) return <p>Error: {error.message}</p>;
 
 
   return (

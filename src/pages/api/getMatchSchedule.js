@@ -35,7 +35,6 @@ function formatTime(timeStr) {
 export default async function handler(req, res) {
   try {
     const cached = await redis.get("ipl-schedule-7");
-    console.log("cached",cached)
     if (cached) {
       return res.status(200).json(JSON.parse(cached));
     }
@@ -100,7 +99,7 @@ export default async function handler(req, res) {
       "ipl-schedule-7",
       JSON.stringify({ schedule }),
       "EX",
-      3600
+      3600 //Cache for 1 hour
     );
 
     console.log("api schedule",schedule)

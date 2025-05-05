@@ -1,22 +1,20 @@
-import { useEffect, useState,useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import MatchCard from "../components/MatchCard";
-import LiveScorecard from '../components/LiveScoreCard'
-import ScheduleList from '../components/ScheduleList'
+import LiveScorecard from "../components/LiveScoreCard";
+import ScheduleList from "../components/ScheduleList";
 import Navbar from "../components/Navbar";
-// import { fetchLiveScores } from '../pages/api/liveScore';
+import { fetchLiveScores } from "../pages/api/liveScore";
 import { useQuery } from "@tanstack/react-query";
 
-
 export default function Home() {
-
   const [score, setScore] = useState({
     seriesId: "",
     matchId: "",
     matchTitle: "",
-    matchFormat: " ",
+    matchFormat: "",
     matchVenue: "",
     matchDate: "",
-    matchTime: " ",
+    matchTime: "",
     teamOne: {
       name: "",
       score: "",
@@ -31,46 +29,49 @@ export default function Home() {
     currentStatus: "",
   });
 
-  // const { data, isLoading, isError, error } = useQuery({
-  //   queryKey: ["liveScores"],
-  //   queryFn: fetchLiveScores,
-  //   refetchInterval: 1000000,
-  // });
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["liveScores"],
+    queryFn: fetchLiveScores,
+    refetchInterval: 15000, //refetch every 15secs
+    refetchOnWindowFocus: false,
+  });
 
-  const { data:scheduleData, scheduleIsLoading, scheduleIsError } = useQuery({
+  const {
+    data: scheduleData,
+    scheduleIsLoading,
+    scheduleIsError,
+  } = useQuery({
     queryKey: ["ipl-schedule"],
     queryFn: async () => {
       const res = await fetch("/api/getMatchSchedule");
       if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
     },
-    // enabled: !isLoading && !score?.matchId,
-    enabled:true,
-    staleTime: 60 * 1000, 
+    enabled: score==undefined, //Only call this api if there is no live matche
+    staleTime: 60 * 1000,
+    retry: 3,
   });
 
   const upcomingSchedule = useMemo(() => {
-    console.log("hiiii",scheduleData)
-      return scheduleData?.schedule?.filter((sch) => sch.MatchStatus === "UpComing") || [];
-    }, [scheduleData]);
-  console.log("scheduleData",scheduleData)
+    return (
+      scheduleData?.schedule?.filter((sch) => sch.MatchStatus == "UpComing") ||
+      []
+    );
+  }, [scheduleData]);
 
-  useEffect(()=>{
-    console.log("scheduleData insideeeee",scheduleData)
-  },[scheduleData])
+  useEffect(() => {
+    if (data) {
+      const matchDetails = data?.response?.filter(
+        (match) => match.seriesName == "INDIAN PREMIER LEAGUE 2025"
+      );
 
-  // useEffect(() => {
-  //   if (data) {
-  //     const matchDetails = data?.response?.filter(
-  //       (match) => match.seriesName == "INDIAN PREMIER LEAGUE 2025"
-  //     );
+      setScore(matchDetails?.[0]?.matchList?.[0]);
+    }
+  }, [data]);
 
-  //     setScore(matchDetails?.[0]?.matchList?.[0]);
-  //   }
-  // }, [data]);
-
-  // if (isLoading) return <p>Loading live scores...</p>;
-  // if (isError) return <p>Error: {error.message}</p>;
+  if (isLoading) return <p>Loading live scores...</p>;
+  if (isError || scheduleIsError) return <p>Error: {error.message}</p>;
+  if (scheduleIsLoading) return <p>Loading upcoming matches...</p>;
 
   return (
     <>
@@ -79,12 +80,15 @@ export default function Home() {
         <h1 className="text-2xl font-bold text-center mb-4">
           IPL T20 Dashboard
         </h1>
-        {/* <MatchCard match={data?.liveMatch} /> */}
-        {score?.matchId ?<LiveScorecard score={score}/> : <ScheduleList
-                      scheduleList={upcomingSchedule}
-                      selectedTeam={""}
-                      selectedVenue={""}
-                    />} 
+        {score?.matchId ? (
+          <LiveScorecard score={score} />
+        ) : (
+          <ScheduleList
+            scheduleList={upcomingSchedule}
+            selectedTeam={""}
+            selectedVenue={""}
+          />
+        )}
       </div>
     </>
   );

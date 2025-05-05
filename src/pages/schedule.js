@@ -18,7 +18,8 @@ export default function SchedulePage() {
       if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
     },
-    staleTime: 60 * 1000, 
+    staleTime: 60 * 1000,
+    retry: 3,
   });
   const pastSchedule = useMemo(() => {
     return data?.schedule.filter((sch) => sch.MatchStatus === "Post") || [];
@@ -43,7 +44,6 @@ export default function SchedulePage() {
     ].map((m) => m.GroundName);
     return Array.from(new Set(allVenues)).sort();
   }, [pastSchedule, upcomingSchedule]);
-  console.log("pastSchedule",pastSchedule)
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -61,7 +61,6 @@ export default function SchedulePage() {
         <div className="text-center text-red-600">Error fetching data</div>
       )}
       <div className="flex flex-col mx-auto sm:flex-row sm:w-1/2 gap-4 mb-6">
-        {/* Team Filter */}
         <div className="w-full sm:w-1/2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Filter by Team
@@ -79,8 +78,6 @@ export default function SchedulePage() {
             ))}
           </select>
         </div>
-
-        {/* Venue Filter */}
         <div className="w-full sm:w-1/2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Filter by Venue
@@ -99,26 +96,20 @@ export default function SchedulePage() {
           </select>
         </div>
       </div>
-      <div className="flex text-black text-[12px] sm:text-[16px] items-center rounded-2xl border-[1px] justify-center w-[50%] mx-auto mb-4">
-        <div
-          className={`flex items-center rounded-2xl justify-center w-[50%] p-2 ${
-            tab === "past" ? " bg-blue-500 font-semibold" : ""
-          }`}
-          onClick={() => setTab("past")}
-        >
-          Past Matches
-        </div>
-        {/* <button
-          className={`flex-1 w-[100px] p-2 ${
-            tab === "past" ? "border-b-2 border-blue-500 font-semibold" : ""
-          }`}
-          onClick={() => setTab("past")}
-        >
-          Past Matches
-        </button> */}
+      <div className="flex text-black text-sm sm:text-base items-center rounded-2xl border justify-center max-w-xs sm:max-w-md mx-auto mb-4 overflow-hidden">
         <button
-          className={`flex-1 w-[25%] p-2 ${
-            tab === "upcoming" ? " bg-blue-500 rounded-2xl  font-semibold" : ""
+          className={`flex-1 p-2 text-center transition-colors ${
+            tab === "past" ? "bg-blue-500 text-white font-semibold" : "bg-white"
+          }`}
+          onClick={() => setTab("past")}
+        >
+          Past Matches
+        </button>
+        <button
+          className={`flex-1 p-2 text-center transition-colors ${
+            tab === "upcoming"
+              ? "bg-blue-500 text-white font-semibold"
+              : "bg-white"
           }`}
           onClick={() => setTab("upcoming")}
         >
@@ -140,9 +131,6 @@ export default function SchedulePage() {
               selectedVenue={selectedVenue}
             />
           )}
-      {/* <PastMatches matches={data?.schedule} /> */}
-
-      {/* {data && <ScheduleList scheduleList={data?.schedule} />} */}
     </div>
   );
 }

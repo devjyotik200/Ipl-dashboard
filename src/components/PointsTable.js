@@ -34,11 +34,6 @@ export default function PointsTable({ points }) {
               key={index}
               className={`text-center border-t ${
                 colorCoding[team.team]
-                // index === 0
-                //   ? "bg-yellow-100 font-bold"
-                //   : index === 1
-                //   ? "bg-green-50"
-                //   : ""
               }`}
             >
               <td className="px-4 py-2 text-left">{team.team}</td>
